@@ -1,0 +1,11 @@
+apiVersion: v2
+name: honeypot
+description: A Helm chart for Honeypot Framework
+
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+maintainers:
+  - name: sudarshantk
+    url: https://github.com/sudarshantk

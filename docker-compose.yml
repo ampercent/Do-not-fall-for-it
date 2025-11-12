@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  honeypot:
+    build: .
+    container_name: honeypot
+    restart: always
+    ports:
+      - "2222:22"
+      - "2223:2222"
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:80"
+      - "3306:3306"
+      - "3307:3307"
+      - "2112:2112"
+    environment:
+      RABBITMQ_URI: ${RABBITMQ_URI}
+      OPEN_AI_SECRET_KEY: ${OPEN_AI_SECRET_KEY}
+    volumes:
+      - "./configurations:/configurations"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - honeynet
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - honeynet
+
+networks:
+  honeynet:
+    driver: bridge
